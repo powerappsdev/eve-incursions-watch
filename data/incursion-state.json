@@ -1,0 +1,46 @@
+{
+  "incursions": {
+    "20000428": {
+      "active": true,
+      "constellation_id": 20000428,
+      "first_seen_at": "2026-08-13T01:20:01Z",
+      "last_seen_at": "2026-08-13T03:49:37Z",
+      "state": "established",
+      "state_changed_at": "2026-08-13T01:20:01Z"
+    },
+    "20000433": {
+      "active": true,
+      "constellation_id": 20000433,
+      "first_seen_at": "2026-08-12T03:45:01Z",
+      "last_seen_at": "2026-08-13T03:49:37Z",
+      "state": "established",
+      "state_changed_at": "2026-08-12T03:45:01Z"
+    },
+    "20000596": {
+      "active": true,
+      "constellation_id": 20000596,
+      "first_seen_at": "2026-08-11T05:05:01Z",
+      "last_seen_at": "2026-08-13T03:49:37Z",
+      "state": "mobilizing",
+      "state_changed_at": "2026-08-11T05:05:01Z"
+    },
+    "20000635": {
+      "active": true,
+      "constellation_id": 20000635,
+      "first_seen_at": "2026-08-10T11:45:01Z",
+      "last_seen_at": "2026-08-13T03:49:37Z",
+      "state": "established",
+      "state_changed_at": "2026-08-10T11:45:01Z"
+    },
+    "20000644": {
+      "active": true,
+      "constellation_id": 20000644,
+      "first_seen_at": "2026-08-11T14:35:01Z",
+      "last_seen_at": "2026-08-13T03:49:37Z",
+      "state": "established",
+      "state_changed_at": "2026-08-11T14:35:01Z"
+    }
+  },
+  "updated_at": "2026-08-13T03:49:37Z",
+  "version": 1
+}

@@ -1,0 +1,7 @@
+.gh-config/
+.gitconfig-codex
+__pycache__/
+*.pyc
+*.tmp
+outputs/
+work/

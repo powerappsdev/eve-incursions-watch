@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Current EVE Online incursions from ESI" />
+    <title>EVE Incursion Watch</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script src="system-types.js" defer></script>
+    <script src="station-systems.js" defer></script>
+    <script src="system-security.js" defer></script>
+    <script src="app.js" defer></script>
+  </head>
+  <body>
+    <main class="shell">
+      <header class="hero">
+        <div>
+          <p class="eyebrow">Tranquility · live ESI data</p>
+          <h1>EVE Incursion Watch</h1>
+          <p class="lede">Currently active Sansha incursions across New Eden.</p>
+        </div>
+        <button id="refresh-button" type="button">Refresh</button>
+      </header>
+
+      <section class="status-panel" aria-live="polite" aria-atomic="true">
+        <span id="status-dot" class="status-dot loading"></span>
+        <div>
+          <strong id="status-title">Contacting ESI…</strong>
+          <p id="status-detail">Loading current incursions.</p>
+        </div>
+      </section>
+
+      <section id="incursion-list" class="incursion-grid" aria-label="Active incursions"></section>
+
+      <template id="incursion-template">
+        <article class="incursion-card">
+          <div class="card-topline">
+            <span class="state-pill"></span>
+            <span class="boss-pill"></span>
+          </div>
+          <h2 class="constellation-name"></h2>
+          <p class="type-line"></p>
+
+          <div class="remaining-row">
+            <span title="The maximum possible time the incursion will stay active">Max. remaining</span>
+            <strong class="max-remaining"></strong>
+          </div>
+
+          <div class="influence-heading">
+            <span>Sansha influence</span>
+            <strong class="influence-value"></strong>
+          </div>
+          <div class="influence-track" role="progressbar" aria-valuemin="0" aria-valuemax="100">
+            <span class="influence-fill"></span>
+          </div>
+          <section class="system-roles" aria-label="Systems by incursion role">
+            <div class="system-roles-heading">
+              <h3>Infected systems</h3>
+              <span class="infected-count"></span>
+            </div>
+            <div class="role-groups"></div>
+          </section>
+        </article>
+      </template>
+
+      <footer>
+        Data supplied by <a href="https://developers.eveonline.com/docs/services/esi/" target="_blank" rel="noreferrer">EVE ESI</a>.
+        This page is not affiliated with CCP Games.
+      </footer>
+    </main>
+    <p id="copy-status" class="copy-toast" role="status" aria-live="polite" hidden></p>
+  </body>
+</html>
