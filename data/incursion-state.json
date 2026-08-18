@@ -1,5 +1,12 @@
 {
   "incursions": {
+    "20000065": {
+      "active": true,
+      "constellation_id": 20000065,
+      "first_seen_at": "2026-08-18T03:56:45Z",
+      "state": "established",
+      "state_changed_at": "2026-08-18T03:56:45Z"
+    },
     "20000069": {
       "active": true,
       "constellation_id": 20000069,
@@ -63,6 +70,6 @@
       "state_changed_at": "2026-08-16T05:48:19Z"
     }
   },
-  "updated_at": "2026-08-17T17:41:19Z",
+  "updated_at": "2026-08-18T03:56:45Z",
   "version": 1
 }
