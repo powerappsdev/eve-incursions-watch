@@ -31,6 +31,13 @@
       "state": "established",
       "state_changed_at": "2026-08-12T03:45:01Z"
     },
+    "20000486": {
+      "active": true,
+      "constellation_id": 20000486,
+      "first_seen_at": "2026-08-18T16:12:36Z",
+      "state": "established",
+      "state_changed_at": "2026-08-18T16:12:36Z"
+    },
     "20000503": {
       "active": true,
       "constellation_id": 20000503,
@@ -70,6 +77,6 @@
       "state_changed_at": "2026-08-16T05:48:19Z"
     }
   },
-  "updated_at": "2026-08-18T03:56:45Z",
+  "updated_at": "2026-08-18T16:12:36Z",
   "version": 1
 }
