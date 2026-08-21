@@ -77,8 +77,15 @@
       "first_seen_at": "2026-08-11T14:35:01Z",
       "state": "withdrawing",
       "state_changed_at": "2026-08-16T05:48:19Z"
+    },
+    "20000655": {
+      "active": true,
+      "constellation_id": 20000655,
+      "first_seen_at": "2026-08-21T13:26:18Z",
+      "state": "established",
+      "state_changed_at": "2026-08-21T13:26:18Z"
     }
   },
-  "updated_at": "2026-08-21T11:20:48Z",
+  "updated_at": "2026-08-21T13:26:18Z",
   "version": 1
 }
