@@ -85,8 +85,15 @@
       "first_seen_at": "2026-08-21T13:26:18Z",
       "state": "established",
       "state_changed_at": "2026-08-21T13:26:18Z"
+    },
+    "20000773": {
+      "active": true,
+      "constellation_id": 20000773,
+      "first_seen_at": "2026-08-22T05:47:00Z",
+      "state": "established",
+      "state_changed_at": "2026-08-22T05:47:00Z"
     }
   },
-  "updated_at": "2026-08-22T04:08:15Z",
+  "updated_at": "2026-08-22T05:47:00Z",
   "version": 1
 }
