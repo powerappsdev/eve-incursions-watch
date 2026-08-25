@@ -106,10 +106,10 @@
       "active": true,
       "constellation_id": 20000773,
       "first_seen_at": "2026-08-22T05:47:00Z",
-      "state": "established",
-      "state_changed_at": "2026-08-22T05:47:00Z"
+      "state": "mobilizing",
+      "state_changed_at": "2026-08-25T01:45:00Z"
     }
   },
-  "updated_at": "2026-08-24T22:10:59Z",
+  "updated_at": "2026-08-25T01:45:00Z",
   "version": 1
 }
