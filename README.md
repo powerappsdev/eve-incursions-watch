@@ -1,5 +1,7 @@
 # EVE Incursion Watch
 
+[View the online version](https://powerappsdev.github.io/eve-incursions-watch/)
+
 A dependency-free GitHub Pages dashboard for current Tranquility incursions from EVE Online's public ESI API. It resolves readable system and constellation names, groups infected systems into Staging, Vanguard, Assault, and Headquarters roles, marks security status and NPC stations, and copies a system name when it is clicked.
 
 ## Hosting
