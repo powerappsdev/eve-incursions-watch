@@ -4,6 +4,15 @@
 
 A dependency-free GitHub Pages dashboard for current Tranquility incursions from EVE Online's public ESI API. It resolves readable system and constellation names, groups infected systems into Staging, Vanguard, Assault, and Headquarters roles, marks security status and NPC stations, and copies a system name when it is clicked.
 
+
+## Dashboard controls
+
+Cards are headed by constellation, with the region underneath. The staging system remains in the Staging group. Region lookups are cached for the current page session; an unavailable region does not prevent the incursion from being displayed.
+
+Use All, High-sec, Low-sec, or Null-sec to filter incursions by their staging system's security space. Your choice is saved in this browser. Incursions with unknown security remain visible under All. Click any system name to copy it; the station marker indicates an NPC station.
+
+Countdowns use days, hours, and minutes for every phase. They are maximum estimates, not guaranteed expiration times. Each card identifies whether its estimate comes from the shared tracker or this browser's first observation.
+
 ## Hosting
 
 The included GitHub Actions workflow publishes the site to GitHub Pages and polls ESI every five minutes. It writes `data/incursion-state.json` only when an incursion starts, ends, or changes state. This preserves the transition time used by **Max. remaining** without a server or paid database.
@@ -30,6 +39,8 @@ Then open <http://localhost:8080>. Stop the server with **Ctrl+C** when finished
 
 - `GET https://esi.evetech.net/latest/incursions/?datasource=tranquility`
 - `POST https://esi.evetech.net/latest/universe/names/?datasource=tranquility`
+- `GET https://esi.evetech.net/latest/universe/constellations/{constellation_id}/`
+- `GET https://esi.evetech.net/latest/universe/regions/{region_id}/`
 - `GET data/incursion-state.json` (maintained by GitHub Actions or the local tracker)
 
 The UI handles timeouts, HTTP/network/CORS failures, empty results, malformed records, and failed name lookups. If name resolution fails, incursion data still renders with numeric IDs. If the shared timing file is unavailable, the page estimates timing from when that browser first observes the state.

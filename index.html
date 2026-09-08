@@ -19,31 +19,50 @@
           <h1>EVE Incursion Watch</h1>
           <p class="lede">Currently active Sansha incursions across New Eden.</p>
         </div>
-        <button id="refresh-button" type="button">Refresh</button>
+        <p class="interaction-hint">Click a system name to copy it.</p>
       </header>
 
-      <section class="status-panel" aria-live="polite" aria-atomic="true">
-        <span id="status-dot" class="status-dot loading"></span>
-        <div>
-          <strong id="status-title">Contacting ESI…</strong>
-          <p id="status-detail">Loading current incursions.</p>
+      <section class="status-panel" aria-label="Live data">
+        <div class="status-message" role="status">
+          <span id="status-dot" class="status-dot loading" aria-hidden="true"></span>
+          <div>
+            <strong id="status-title">Contacting ESI…</strong>
+            <p id="status-detail">Loading current incursions.</p>
+          </div>
         </div>
+        <button id="refresh-button" type="button">Refresh</button>
       </section>
 
+      <div class="filter-toolbar">
+        <div id="security-filters" class="security-filters" role="group" aria-label="Filter by staging system security">
+          <button type="button" data-filter="all" aria-pressed="true">All <span class="filter-count">0</span></button>
+          <button type="button" data-filter="high" aria-pressed="false">High-sec <span class="filter-count">0</span></button>
+          <button type="button" data-filter="low" aria-pressed="false">Low-sec <span class="filter-count">0</span></button>
+          <button type="button" data-filter="null" aria-pressed="false">Null-sec <span class="filter-count">0</span></button>
+        </div>
+        <p id="filter-summary" role="status"></p>
+      </div>
+      <section id="filter-empty" class="empty-panel" hidden>
+        <h2>No incursions in this view</h2>
+        <p>Try another security filter to see the other active incursions.</p>
+        <button id="clear-filter" type="button">Show all incursions</button>
+      </section>
       <section id="incursion-list" class="incursion-grid" aria-label="Active incursions"></section>
 
       <template id="incursion-template">
         <article class="incursion-card">
           <div class="card-topline">
+            <span class="space-pill"></span>
             <span class="state-pill"></span>
-            <span class="boss-pill"></span>
           </div>
           <h2 class="constellation-name"></h2>
           <p class="type-line"></p>
+          <span class="boss-pill"></span>
 
           <div class="remaining-row">
-            <span title="The maximum possible time the incursion will stay active">Max. remaining</span>
+            <span>Max. remaining</span>
             <strong class="max-remaining"></strong>
+            <span class="timing-note"></span>
           </div>
 
           <div class="influence-heading">

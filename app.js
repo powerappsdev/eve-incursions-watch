@@ -11,6 +11,9 @@ const SYSTEM_TYPES = window.INCURSION_SYSTEM_TYPES ?? {};
 const STATION_SYSTEMS = window.SYSTEMS_WITH_STATIONS ?? new Set();
 const SYSTEM_SECURITY = window.SYSTEM_SECURITY ?? {};
 const ROLE_ORDER = ["Staging", "Vanguard", "Assault", "Headquarters", "Unclassified"];
+const SECURITY_FILTER_KEY = "eve-incursion-security-filter-v1";
+const SPACE_LABELS = { high: "High-sec", low: "Low-sec", null: "Null-sec", unknown: "Security unknown" };
+const universeCache = new Map();
 
 const list = document.querySelector("#incursion-list");
 const template = document.querySelector("#incursion-template");
@@ -19,8 +22,52 @@ const statusDot = document.querySelector("#status-dot");
 const statusTitle = document.querySelector("#status-title");
 const statusDetail = document.querySelector("#status-detail");
 const copyStatus = document.querySelector("#copy-status");
+const filterControls = document.querySelector("#security-filters");
+const filterSummary = document.querySelector("#filter-summary");
+const filterEmpty = document.querySelector("#filter-empty");
+let selectedFilter = readSecurityFilter();
+let hasLoaded = false;
 let copyStatusTimer;
 let remainingTimer;
+
+function readSecurityFilter() {
+  try {
+    const value = localStorage.getItem(SECURITY_FILTER_KEY);
+    return ["high", "low", "null"].includes(value) ? value : "all";
+  } catch {
+    return "all";
+  }
+}
+
+function applySecurityFilter() {
+  const cards = [...list.querySelectorAll(".incursion-card")];
+  const counts = { all: cards.length, high: 0, low: 0, null: 0 };
+  let visible = 0;
+  for (const card of cards) {
+    if (Object.hasOwn(counts, card.dataset.area)) counts[card.dataset.area]++;
+    card.hidden = selectedFilter !== "all" && card.dataset.area !== selectedFilter;
+    if (!card.hidden) visible++;
+  }
+  for (const button of filterControls.querySelectorAll("button[data-filter]")) {
+    button.setAttribute("aria-pressed", String(button.dataset.filter === selectedFilter));
+    button.querySelector(".filter-count").textContent = String(counts[button.dataset.filter]);
+    button.disabled = !hasLoaded;
+  }
+  filterSummary.textContent = hasLoaded
+    ? `Showing ${visible} of ${cards.length} · by staging system`
+    : "";
+  filterEmpty.hidden = !hasLoaded || cards.length === 0 || visible > 0;
+}
+
+function selectSecurityFilter(value) {
+  selectedFilter = ["high", "low", "null"].includes(value) ? value : "all";
+  try {
+    localStorage.setItem(SECURITY_FILTER_KEY, selectedFilter);
+  } catch {
+    // Filtering remains available when browser storage is blocked.
+  }
+  applySecurityFilter();
+}
 
 function setStatus(kind, title, detail) {
   statusDot.className = `status-dot ${kind}`.trim();
@@ -69,6 +116,41 @@ async function getNames(incursions) {
     body: JSON.stringify(ids),
   });
   return new Map(records.map(({ id, name }) => [id, name]));
+}
+
+function getUniverseRecord(kind, id) {
+  const key = `${kind}/${id}`;
+  if (!universeCache.has(key)) {
+    const request = fetchJson(`${ESI_ROOT}/universe/${key}/?datasource=tranquility`)
+      .then((record) => {
+        if (typeof record?.name !== "string" || !record.name.trim()
+          || (kind === "constellations" && !Number.isInteger(record.region_id))) {
+          throw new Error("Unexpected universe response");
+        }
+        return record;
+      })
+      .catch((error) => {
+        universeCache.delete(key); // Allow a later refresh to retry a failed lookup.
+        throw error;
+      });
+    universeCache.set(key, request);
+  }
+  return universeCache.get(key);
+}
+
+async function getLocations(incursions) {
+  const ids = [...new Set(incursions.map((item) => item.constellation_id))];
+  const results = await Promise.allSettled(ids.map(async (id) => {
+    const constellation = await getUniverseRecord("constellations", id);
+    let regionName = null;
+    try {
+      regionName = (await getUniverseRecord("regions", constellation.region_id)).name;
+    } catch {
+      // Keep the constellation name even if its region cannot be resolved.
+    }
+    return [id, { constellationName: constellation.name, regionId: constellation.region_id, regionName }];
+  }));
+  return new Map(results.filter((result) => result.status === "fulfilled").map((result) => result.value));
 }
 
 function readObservedStates() {
@@ -156,7 +238,7 @@ function roleForSystem(id, stagingSystemId) {
 }
 
 function securityForSystem(id) {
-  const raw = Number(SYSTEM_SECURITY[id]);
+  const raw = SYSTEM_SECURITY[id];
   if (!Number.isFinite(raw)) return null;
   const rounded = raw > 0 ? Number(raw.toFixed(1)) : Number(raw.toFixed(2));
   return {
@@ -197,20 +279,16 @@ function lifetimeForState(state) {
   return DAY_MS;
 }
 
-function formatRemaining(targetTime, state) {
+function formatRemaining(targetTime) {
+  if (!Number.isFinite(targetTime)) return "Unavailable";
   const remaining = Math.max(0, targetTime - Date.now());
-  if (remaining === 0) return "maximum reached";
-
-  if (state === "established") {
-    const days = Math.floor(remaining / DAY_MS);
-    return `up to ${days} day${days === 1 ? "" : "s"}`;
-  }
-
-  const totalSeconds = Math.floor(remaining / 1000);
-  const hours = Math.floor(totalSeconds / 3600);
-  const minutes = Math.floor((totalSeconds % 3600) / 60);
-  const seconds = totalSeconds % 60;
-  return [hours, minutes, seconds].map((value) => String(value).padStart(2, "0")).join(":");
+  if (remaining === 0) return "Estimate elapsed";
+  if (remaining < 60_000) return "< 1m";
+  const totalMinutes = Math.floor(remaining / 60_000);
+  const days = Math.floor(totalMinutes / 1440);
+  const hours = Math.floor((totalMinutes % 1440) / 60);
+  const minutes = totalMinutes % 60;
+  return days > 0 ? `${days}d ${hours}h ${minutes}m` : `${hours}h ${minutes}m`;
 }
 
 function updateRemainingTimes() {
@@ -291,29 +369,48 @@ function renderSystemRoles(container, item, names) {
       });
 
     group.append(heading, systems);
+    if (role === "Unclassified") {
+      const note = document.createElement("p");
+      note.className = "role-note";
+      note.textContent = "System roles unavailable in our reference data.";
+      group.append(note);
+    }
     container.append(group);
   }
 }
 
-function renderIncursion(item, names, timing) {
+function renderIncursion(item, names, timing, place) {
   const node = template.content.cloneNode(true);
   const percent = Math.max(0, Math.min(100, Number(item.influence) * 100));
   const state = item.state || "unknown";
+  const card = node.querySelector(".incursion-card");
+  card.dataset.state = String(state).toLowerCase();
+  const area = securityForSystem(item.staging_solar_system_id)?.area ?? "unknown";
+  card.dataset.area = area;
+  const space = node.querySelector(".space-pill");
+  space.textContent = SPACE_LABELS[area];
+  space.classList.add(area);
+  space.title = "Security space of the staging system";
 
   node.querySelector(".state-pill").textContent = state;
   const boss = node.querySelector(".boss-pill");
   boss.textContent = item.has_boss ? "Mothership present" : "No mothership";
   if (!item.has_boss) boss.classList.add("hidden");
 
-  node.querySelector(".constellation-name").textContent = labelFor(item.staging_solar_system_id, names, "System");
-  node.querySelector(".type-line").textContent = `${labelFor(item.constellation_id, names, "Constellation")} constellation`;
+  node.querySelector(".constellation-name").textContent = place?.constellationName ?? labelFor(item.constellation_id, names, "Constellation");
+  node.querySelector(".type-line").textContent = place?.regionName
+    ? `${place.regionName} region`
+    : place?.regionId ? `Region ${place.regionId} · name unavailable` : "Region unavailable";
   const remaining = node.querySelector(".max-remaining");
   remaining.dataset.targetTime = String(timing.changedAt + lifetimeForState(timing.state));
   remaining.dataset.incursionState = timing.state;
   remaining.title = timing.source === "tracker"
-    ? "Calculated from the state-change time recorded by the ESI tracker."
-    : "Estimated from when this browser first observed the state because ESI does not supply its start time.";
-  const infectedCount = item.infested_solar_systems.length;
+    ? "Maximum estimate based on a recorded state change, not a guaranteed expiry. Tracker delays can affect accuracy."
+    : "Maximum estimate from when this browser first observed the state. ESI does not supply its start time, so this can overestimate the time left.";
+  node.querySelector(".timing-note").textContent = timing.source === "tracker"
+    ? "Maximum estimate · shared tracker"
+    : "Maximum estimate · first seen in this browser";
+  const infectedCount = new Set([...item.infested_solar_systems, item.staging_solar_system_id]).size;
   node.querySelector(".infected-count").textContent = `${infectedCount} system${infectedCount === 1 ? "" : "s"}`;
   node.querySelector(".influence-value").textContent = `${percent.toFixed(1)}%`;
 
@@ -335,7 +432,9 @@ function friendlyError(error) {
 async function loadIncursions() {
   clearInterval(remainingTimer);
   refreshButton.disabled = true;
+  hasLoaded = false;
   list.replaceChildren();
+  applySecurityFilter();
   setStatus("loading", "Contacting ESI…", "Loading current incursions.");
 
   try {
@@ -344,6 +443,8 @@ async function loadIncursions() {
     const incursions = raw.filter(validIncursion);
 
     if (!incursions.length) {
+      hasLoaded = true;
+      applySecurityFilter();
       setStatus("", "No active incursions", "ESI currently reports no active incursions on Tranquility.");
       return;
     }
@@ -351,9 +452,10 @@ async function loadIncursions() {
     let names = new Map();
     let namesWarning = "";
     let timings = localTimingData(incursions);
-    const [namesResult, timingsResult] = await Promise.allSettled([
+    const [namesResult, timingsResult, locationsResult] = await Promise.allSettled([
       getNames(incursions),
       getTimingData(incursions),
+      getLocations(incursions),
     ]);
 
     if (namesResult.status === "fulfilled") {
@@ -370,11 +472,14 @@ async function loadIncursions() {
     }
 
     incursions.sort((a, b) => a.influence - b.influence);
-    incursions.forEach((item) => renderIncursion(item, names, timings.get(item.constellation_id)));
+    const locations = locationsResult.status === "fulfilled" ? locationsResult.value : new Map();
+    incursions.forEach((item) => renderIncursion(item, names, timings.get(item.constellation_id), locations.get(item.constellation_id)));
+    hasLoaded = true;
+    applySecurityFilter();
     updateRemainingTimes();
-    remainingTimer = setInterval(updateRemainingTimes, 1000);
+    remainingTimer = setInterval(updateRemainingTimes, 30_000);
     const fetchedAt = new Intl.DateTimeFormat(undefined, { timeStyle: "short" }).format(new Date());
-    setStatus("", `${incursions.length} active incursion${incursions.length === 1 ? "" : "s"}`, `Updated at ${fetchedAt}.${namesWarning}`);
+    setStatus("", `${incursions.length} active incursion${incursions.length === 1 ? "" : "s"}`, `Live ESI checked at ${fetchedAt}.${namesWarning}`);
   } catch (error) {
     console.error("Unable to load incursions", error);
     setStatus("error", "Unable to load incursions", friendlyError(error));
@@ -384,6 +489,14 @@ async function loadIncursions() {
 }
 
 refreshButton.addEventListener("click", loadIncursions);
+filterControls.addEventListener("click", (event) => {
+  const button = event.target instanceof Element ? event.target.closest("button[data-filter]") : null;
+  if (button && !button.disabled) selectSecurityFilter(button.dataset.filter);
+});
+document.querySelector("#clear-filter").addEventListener("click", () => {
+  selectSecurityFilter("all");
+  filterControls.querySelector('button[data-filter="all"]').focus();
+});
 list.addEventListener("click", async (event) => {
   const button = event.target instanceof Element ? event.target.closest(".system-copy") : null;
   if (!button) return;
