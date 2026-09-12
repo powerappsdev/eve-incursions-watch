@@ -59,8 +59,8 @@
       "active": true,
       "constellation_id": 20000363,
       "first_seen_at": "2026-09-10T23:10:13Z",
-      "state": "established",
-      "state_changed_at": "2026-09-10T23:10:13Z"
+      "state": "mobilizing",
+      "state_changed_at": "2026-09-12T18:40:48Z"
     },
     "20000428": {
       "active": false,
@@ -213,6 +213,6 @@
       "state_changed_at": "2026-09-12T16:29:24Z"
     }
   },
-  "updated_at": "2026-09-12T16:29:24Z",
+  "updated_at": "2026-09-12T18:40:48Z",
   "version": 1
 }
