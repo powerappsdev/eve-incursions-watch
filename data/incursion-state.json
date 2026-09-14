@@ -63,8 +63,9 @@
       "state_changed_at": "2026-08-31T20:17:34Z"
     },
     "20000363": {
-      "active": true,
+      "active": false,
       "constellation_id": 20000363,
+      "ended_at": "2026-09-14T20:23:07Z",
       "first_seen_at": "2026-09-10T23:10:13Z",
       "state": "mobilizing",
       "state_changed_at": "2026-09-12T18:40:48Z"
@@ -221,6 +222,6 @@
       "state_changed_at": "2026-09-12T16:29:24Z"
     }
   },
-  "updated_at": "2026-09-14T10:11:05Z",
+  "updated_at": "2026-09-14T20:23:07Z",
   "version": 1
 }
