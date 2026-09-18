@@ -17,8 +17,9 @@
       "state_changed_at": "2026-08-24T08:26:21Z"
     },
     "20000091": {
-      "active": true,
+      "active": false,
       "constellation_id": 20000091,
+      "ended_at": "2026-09-18T00:07:53Z",
       "first_seen_at": "2026-09-17T10:04:04Z",
       "state": "established",
       "state_changed_at": "2026-09-17T10:04:04Z"
@@ -246,6 +247,6 @@
       "state_changed_at": "2026-09-17T18:55:42Z"
     }
   },
-  "updated_at": "2026-09-17T18:55:42Z",
+  "updated_at": "2026-09-18T00:07:53Z",
   "version": 1
 }
