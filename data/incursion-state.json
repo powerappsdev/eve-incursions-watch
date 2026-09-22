@@ -199,8 +199,9 @@
       "state_changed_at": "2026-08-13T12:11:13Z"
     },
     "20000627": {
-      "active": true,
+      "active": false,
       "constellation_id": 20000627,
+      "ended_at": "2026-09-22T12:06:25Z",
       "first_seen_at": "2026-09-17T05:13:40Z",
       "state": "mobilizing",
       "state_changed_at": "2026-09-21T23:12:07Z"
@@ -277,6 +278,6 @@
       "state_changed_at": "2026-09-17T18:55:42Z"
     }
   },
-  "updated_at": "2026-09-22T06:47:21Z",
+  "updated_at": "2026-09-22T12:06:25Z",
   "version": 1
 }
