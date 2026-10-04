@@ -1,8 +1,9 @@
 {
   "incursions": {
     "20000011": {
-      "active": true,
+      "active": false,
       "constellation_id": 20000011,
+      "ended_at": "2026-10-04T07:37:27Z",
       "first_seen_at": "2026-09-26T11:17:17Z",
       "state": "withdrawing",
       "state_changed_at": "2026-10-03T07:41:13Z"
@@ -334,6 +335,6 @@
       "state_changed_at": "2026-09-17T18:55:42Z"
     }
   },
-  "updated_at": "2026-10-03T19:32:15Z",
+  "updated_at": "2026-10-04T07:37:27Z",
   "version": 1
 }
