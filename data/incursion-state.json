@@ -337,8 +337,8 @@
       "active": true,
       "constellation_id": 20000770,
       "first_seen_at": "2026-10-04T20:30:01Z",
-      "state": "established",
-      "state_changed_at": "2026-10-04T20:30:01Z"
+      "state": "mobilizing",
+      "state_changed_at": "2026-10-06T23:01:34Z"
     },
     "20000773": {
       "active": false,
@@ -357,6 +357,6 @@
       "state_changed_at": "2026-09-17T18:55:42Z"
     }
   },
-  "updated_at": "2026-10-06T06:39:12Z",
+  "updated_at": "2026-10-06T23:01:34Z",
   "version": 1
 }
