@@ -138,8 +138,8 @@
       "active": true,
       "constellation_id": 20000421,
       "first_seen_at": "2026-10-02T14:05:45Z",
-      "state": "established",
-      "state_changed_at": "2026-10-02T14:05:45Z"
+      "state": "mobilizing",
+      "state_changed_at": "2026-10-06T06:39:12Z"
     },
     "20000422": {
       "active": false,
@@ -357,6 +357,6 @@
       "state_changed_at": "2026-09-17T18:55:42Z"
     }
   },
-  "updated_at": "2026-10-05T18:41:56Z",
+  "updated_at": "2026-10-06T06:39:12Z",
   "version": 1
 }
