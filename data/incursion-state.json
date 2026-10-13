@@ -263,8 +263,9 @@
       "state_changed_at": "2026-10-10T18:58:41Z"
     },
     "20000579": {
-      "active": true,
+      "active": false,
       "constellation_id": 20000579,
+      "ended_at": "2026-10-13T00:07:08Z",
       "first_seen_at": "2026-10-05T18:41:56Z",
       "state": "withdrawing",
       "state_changed_at": "2026-10-11T18:53:50Z"
@@ -326,8 +327,9 @@
       "state_changed_at": "2026-08-29T21:20:46Z"
     },
     "20000713": {
-      "active": true,
+      "active": false,
       "constellation_id": 20000713,
+      "ended_at": "2026-10-13T00:07:08Z",
       "first_seen_at": "2026-10-09T19:02:23Z",
       "state": "mobilizing",
       "state_changed_at": "2026-10-11T14:08:16Z"
@@ -381,6 +383,6 @@
       "state_changed_at": "2026-09-17T18:55:42Z"
     }
   },
-  "updated_at": "2026-10-12T17:52:52Z",
+  "updated_at": "2026-10-13T00:07:08Z",
   "version": 1
 }
