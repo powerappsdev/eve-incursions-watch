@@ -278,6 +278,13 @@
       "state": "withdrawing",
       "state_changed_at": "2026-08-13T12:11:13Z"
     },
+    "20000609": {
+      "active": true,
+      "constellation_id": 20000609,
+      "first_seen_at": "2026-10-13T20:21:38Z",
+      "state": "established",
+      "state_changed_at": "2026-10-13T20:21:38Z"
+    },
     "20000627": {
       "active": false,
       "constellation_id": 20000627,
@@ -383,6 +390,6 @@
       "state_changed_at": "2026-09-17T18:55:42Z"
     }
   },
-  "updated_at": "2026-10-13T00:07:08Z",
+  "updated_at": "2026-10-13T20:21:38Z",
   "version": 1
 }
