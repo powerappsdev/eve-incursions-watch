@@ -28,8 +28,8 @@
       "active": true,
       "constellation_id": 20000087,
       "first_seen_at": "2026-10-11T14:08:16Z",
-      "state": "mobilizing",
-      "state_changed_at": "2026-10-15T04:31:32Z"
+      "state": "withdrawing",
+      "state_changed_at": "2026-10-17T05:05:22Z"
     },
     "20000091": {
       "active": false,
@@ -405,6 +405,6 @@
       "state_changed_at": "2026-09-17T18:55:42Z"
     }
   },
-  "updated_at": "2026-10-17T00:48:46Z",
+  "updated_at": "2026-10-17T05:05:22Z",
   "version": 1
 }
