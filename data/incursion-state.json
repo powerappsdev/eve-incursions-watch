@@ -89,8 +89,9 @@
       "state_changed_at": "2026-10-10T02:22:43Z"
     },
     "20000211": {
-      "active": true,
+      "active": false,
       "constellation_id": 20000211,
+      "ended_at": "2026-10-24T19:27:50Z",
       "first_seen_at": "2026-10-19T06:57:46Z",
       "state": "withdrawing",
       "state_changed_at": "2026-10-24T01:06:49Z"
@@ -462,6 +463,6 @@
       "state_changed_at": "2026-10-24T09:53:15Z"
     }
   },
-  "updated_at": "2026-10-24T09:53:15Z",
+  "updated_at": "2026-10-24T19:27:50Z",
   "version": 1
 }
