@@ -292,8 +292,8 @@
       "active": true,
       "constellation_id": 20000551,
       "first_seen_at": "2026-10-24T09:53:15Z",
-      "state": "established",
-      "state_changed_at": "2026-10-24T09:53:15Z"
+      "state": "mobilizing",
+      "state_changed_at": "2026-10-27T05:43:56Z"
     },
     "20000562": {
       "active": false,
@@ -478,6 +478,6 @@
       "state_changed_at": "2026-10-24T09:53:15Z"
     }
   },
-  "updated_at": "2026-10-27T00:47:23Z",
+  "updated_at": "2026-10-27T05:43:56Z",
   "version": 1
 }
