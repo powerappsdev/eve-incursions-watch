@@ -296,8 +296,9 @@
       "state_changed_at": "2026-10-18T09:52:08Z"
     },
     "20000551": {
-      "active": true,
+      "active": false,
       "constellation_id": 20000551,
+      "ended_at": "2026-10-30T05:43:13Z",
       "first_seen_at": "2026-10-24T09:53:15Z",
       "state": "withdrawing",
       "state_changed_at": "2026-10-29T01:58:35Z"
@@ -489,10 +490,10 @@
       "active": true,
       "constellation_id": 20000788,
       "first_seen_at": "2026-10-24T09:53:15Z",
-      "state": "mobilizing",
-      "state_changed_at": "2026-10-28T06:02:00Z"
+      "state": "withdrawing",
+      "state_changed_at": "2026-10-30T05:43:13Z"
     }
   },
-  "updated_at": "2026-10-29T15:21:15Z",
+  "updated_at": "2026-10-30T05:43:13Z",
   "version": 1
 }
