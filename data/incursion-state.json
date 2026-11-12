@@ -159,6 +159,13 @@
       "state": "withdrawing",
       "state_changed_at": "2026-09-10T06:21:34Z"
     },
+    "20000338": {
+      "active": true,
+      "constellation_id": 20000338,
+      "first_seen_at": "2026-11-12T23:54:12Z",
+      "state": "established",
+      "state_changed_at": "2026-11-12T23:54:12Z"
+    },
     "20000347": {
       "active": false,
       "constellation_id": 20000347,
@@ -575,6 +582,6 @@
       "state_changed_at": "2026-10-30T05:43:13Z"
     }
   },
-  "updated_at": "2026-11-12T18:46:31Z",
+  "updated_at": "2026-11-12T23:54:12Z",
   "version": 1
 }
