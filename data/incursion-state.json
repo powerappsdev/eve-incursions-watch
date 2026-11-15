@@ -534,6 +534,13 @@
       "state": "established",
       "state_changed_at": "2026-09-05T09:55:01Z"
     },
+    "20000750": {
+      "active": true,
+      "constellation_id": 20000750,
+      "first_seen_at": "2026-11-15T10:03:31Z",
+      "state": "established",
+      "state_changed_at": "2026-11-15T10:03:31Z"
+    },
     "20000759": {
       "active": false,
       "constellation_id": 20000759,
@@ -559,8 +566,9 @@
       "state_changed_at": "2026-10-09T00:26:19Z"
     },
     "20000772": {
-      "active": true,
+      "active": false,
       "constellation_id": 20000772,
+      "ended_at": "2026-11-15T10:03:31Z",
       "first_seen_at": "2026-11-13T20:34:58Z",
       "state": "established",
       "state_changed_at": "2026-11-13T20:34:58Z"
@@ -590,6 +598,6 @@
       "state_changed_at": "2026-10-30T05:43:13Z"
     }
   },
-  "updated_at": "2026-11-14T07:32:36Z",
+  "updated_at": "2026-11-15T10:03:31Z",
   "version": 1
 }
