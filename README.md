@@ -15,9 +15,9 @@ Countdowns use days, hours, and minutes for every phase. They are maximum estima
 
 ## Hosting
 
-The included GitHub Actions workflow publishes the site to GitHub Pages and polls ESI every five minutes. It writes `data/incursion-state.json` only when an incursion starts, ends, or changes state. This preserves the transition time used by **Max. remaining** without a server or paid database.
+GitHub Pages hosts the site. The Cloudflare Worker in `collector/` checks ESI every five minutes and stores lifecycle history and a successful-check heartbeat in D1. It respects ESI's cache expiry and retains existing history when ESI fails or returns invalid data. The dashboard reads the Worker's public `/state` endpoint; readers cannot submit history or alter records. The first read initializes an empty database. The legacy GitHub Actions collector remains enabled as a separate backup, but its data is not used by the live page; disabling that schedule requires GitHub workflow-write authorization.
 
-The workflow can also be run manually from the repository's **Actions** tab. GitHub may delay scheduled jobs during busy periods, and it automatically disables scheduled workflows in a public repository after 60 days without repository activity.
+Deploy the collector with `npx wrangler deploy --config collector/wrangler.jsonc`. For another account, replace the account/database identifiers and the dashboard's `TIMINGS_URL`. Create its table using `collector/schema.sql`. Run `node collector/test.mjs` for lifecycle tests. Keep Cloudflare credentials out of this repository. The existing Python scripts and JSON remain available for manual/local operation and initial migration.
 
 ## Run locally
 
@@ -41,7 +41,7 @@ Then open <http://localhost:8080>. Stop the server with **Ctrl+C** when finished
 - `POST https://esi.evetech.net/latest/universe/names/?datasource=tranquility`
 - `GET https://esi.evetech.net/latest/universe/constellations/{constellation_id}/`
 - `GET https://esi.evetech.net/latest/universe/regions/{region_id}/`
-- `GET data/incursion-state.json` (maintained by GitHub Actions or the local tracker)
+- `GET https://eve-incursions-collector.eve-incursion-watch.workers.dev/state` (Cloudflare collector; no authentication required for reads)
 
 The UI handles timeouts, HTTP/network/CORS failures, empty results, malformed records, and failed name lookups. If name resolution fails, incursion data still renders with numeric IDs. If the shared timing file is unavailable, the page estimates timing from when that browser first observes the state.
 
@@ -51,13 +51,13 @@ The UI handles timeouts, HTTP/network/CORS failures, empty results, malformed re
 
 When ESI reports no active high-sec incursion, the banner uses the latest recorded high-sec end time: a 12-hour cooldown, then a spawn window through hour 36. After 36 hours it asks you to refresh. The rule mirrors [the reference project's spawn banner](https://github.com/Shadowlauch/eve-incursions-node/blob/master/packages/frontend/src/components/spawn/lastHsSpawn.tsx); it is an estimate, not an ESI forecast. Polling delays can make the recorded end time later than the actual end.
 
-The estimate is independent of the security filter and disappears whenever a high-sec incursion is active. Missing history, unknown security, or a tracker that has not yet recorded the latest end produces an unavailable message rather than a guessed timer. After ten minutes without an ESI refresh, the banner asks you to refresh. Existing history is resolved through ESI constellation data and the static staging/security maps; new tracker entries also save their staging-system ID. No additional service or database is required.
+The estimate is independent of the security filter and disappears whenever a high-sec incursion is active. Missing history, unknown security, or a tracker that has not yet recorded the latest end produces an unavailable message rather than a guessed timer. New ends save the interval between last seen and first absent, displayed as a countdown range. These are observation times, not exact in-game timestamps; ESI caching adds uncertainty. Shared data older than fifteen minutes is rejected; after ten minutes without a page refresh, the banner asks you to refresh. Legacy history is resolved through ESI constellation data and the static staging/security maps.
 
 ## Incursion lifetime calculation
 
-The reference project calculates maximum remaining lifetime from its recorded `lastStateChangeDate`: three days for Mobilizing, eight days for Established, and one day for other states. ESI does not expose that timestamp, so the scheduled workflow runs `scripts/update_incursion_state.py` and stores each observed transition in `data/incursion-state.json`.
+The reference project calculates maximum remaining lifetime from its recorded `lastStateChangeDate`: three days for Mobilizing, eight days for Established, and one day for other states. ESI does not expose that timestamp, so the collector saves the time it observes each transition.
 
-The file was initially seeded from the reference site for continuity, but the running page no longer contacts or depends on that site. If the tracker misses a transition, its next run records the time it first observes the new state.
+The collector imports the existing repository history once when its database is empty. That seed originally came from the reference site. The Yekti end recorded late on November 19, 2026 is corrected during import to 04:20:02 UTC, attributed to eve-incursions.com/history. Ongoing collection depends only on ESI, not that site. If collection misses a transition, the next successful run records its observation rather than inventing an exact end time.
 
 ## System roles and static data
 

@@ -3,7 +3,7 @@
 const ESI_ROOT = "https://esi.evetech.net/latest";
 const INCURSIONS_URL = `${ESI_ROOT}/incursions/?datasource=tranquility`;
 const NAMES_URL = `${ESI_ROOT}/universe/names/?datasource=tranquility`;
-const TIMINGS_URL = new URL("data/incursion-state.json", document.baseURI);
+const TIMINGS_URL = new URL("https://eve-incursions-collector.eve-incursion-watch.workers.dev/state");
 const REQUEST_TIMEOUT_MS = 15_000;
 const DAY_MS = 24 * 60 * 60 * 1000;
 const OBSERVED_STATES_KEY = "eve-incursion-observed-states-v1";
@@ -81,7 +81,8 @@ async function getHighSecSpawnEstimate(incursions, history) {
     if (area === "high") {
       const endedAt = Date.parse(record.ended_at);
       if (highSecSpawnPhase(endedAt).kind === "unavailable") return unavailable;
-      return { endedAt, checkedAt: Date.now() };
+      const endAfter = Date.parse(record.end_after);
+      return { endedAt, endAfter, checkedAt: Date.now() };
     }
   }
   return unavailable;
@@ -106,6 +107,12 @@ function updateHighSecSpawnBanner() {
     const seconds = Math.max(0, Math.ceil((phase.target - Date.now()) / 1000));
     spawnCountdown.textContent = [Math.floor(seconds / 3600), Math.floor(seconds % 3600 / 60), seconds % 60]
       .map((value) => String(value).padStart(2, "0")).join(":");
+    if (Number.isFinite(spawnEstimate.endAfter) && spawnEstimate.endAfter < spawnEstimate.endedAt) {
+      const lowerSeconds = Math.max(0, Math.ceil((phase.target - (spawnEstimate.endedAt - spawnEstimate.endAfter) - Date.now()) / 1000));
+      const lower = [Math.floor(lowerSeconds / 3600), Math.floor(lowerSeconds % 3600 / 60), lowerSeconds % 60]
+        .map(value => String(value).padStart(2, "0")).join(":");
+      spawnCountdown.textContent = `${lower}–${spawnCountdown.textContent}`;
+    }
   }
   spawnDetail.textContent = phase.kind === "unavailable"
     ? stale ? "Refresh to check for a new high-sec spawn." : "Waiting for a confirmed high-sec end time in the shared history."
@@ -282,7 +289,11 @@ async function getTimingData(incursions) {
   const url = new URL(TIMINGS_URL);
   url.searchParams.set("v", String(Date.now()));
   const payload = await fetchJson(url, { cache: "no-store" });
+  if (payload?.last_success_at && Date.now() - Date.parse(payload.last_success_at) > 15 * 60 * 1000) {
+    throw new Error("Shared tracker is stale; spawn estimate withheld");
+  }
   timings.history = payload?.incursions;
+  timings.lastChecked = payload?.last_success_at;
 
   const records = Array.isArray(payload?.timings)
     ? payload.timings
@@ -547,8 +558,10 @@ async function loadIncursions() {
     }
     if (timingsResult.status === "fulfilled") {
       timings = timingsResult.value;
+      if (timings.lastChecked) namesWarning += ` History checked at ${new Intl.DateTimeFormat(undefined, { timeStyle: "short" }).format(new Date(timings.lastChecked))}.`;
     } else {
       console.warn("Local timing tracker is unavailable; using browser-observed state times.", timingsResult.reason);
+      namesWarning += " Shared history unavailable or stale; using browser-observed timings.";
     }
 
     incursions.sort((a, b) => a.influence - b.influence);

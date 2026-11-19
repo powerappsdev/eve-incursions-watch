@@ -1,0 +1,13 @@
+{
+  "name": "eve-incursions-collector",
+  "main": "worker.mjs",
+  "compatibility_date": "2026-11-19",
+  "account_id": "c3d98fe1624cb8aea02162c453953ad4",
+  "workers_dev": true,
+  "triggers": { "crons": ["*/5 * * * *"] },
+  "d1_databases": [{
+    "binding": "DB",
+    "database_name": "eve-incursions-history",
+    "database_id": "e77969b0-5dda-44a4-a32e-d4a958462aee"
+  }]
+}
