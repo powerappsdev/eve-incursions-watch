@@ -59,6 +59,10 @@ def update_state(state: dict[str, Any], incursions: list[dict[str, Any]]) -> boo
         key = str(constellation_id)
         active_ids.add(key)
         previous = records.get(key)
+        staging_id = incursion.get("staging_solar_system_id")
+        if isinstance(previous, dict) and isinstance(staging_id, int) and previous.get("staging_solar_system_id") != staging_id:
+            previous["staging_solar_system_id"] = staging_id
+            changed = True
         if (
             isinstance(previous, dict)
             and previous.get("active")
@@ -73,6 +77,7 @@ def update_state(state: dict[str, Any], incursions: list[dict[str, Any]]) -> boo
             "first_seen_at": previous.get("first_seen_at", now) if is_continuing_spawn else now,
             "state": incursion_state,
             "state_changed_at": now,
+            "staging_solar_system_id": staging_id,
         }
         changed = True
 

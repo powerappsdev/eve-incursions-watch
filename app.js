@@ -29,6 +29,89 @@ let selectedFilter = readSecurityFilter();
 let hasLoaded = false;
 let copyStatusTimer;
 let remainingTimer;
+const spawnPanel = document.querySelector("#hs-spawn-panel");
+const spawnTitle = document.querySelector("#hs-spawn-title");
+const spawnCountdown = document.querySelector("#hs-spawn-countdown");
+const spawnDetail = document.querySelector("#hs-spawn-detail");
+let spawnEstimate = null;
+let spawnTimer;
+
+function highSecSpawnPhase(endedAt, now = Date.now()) {
+  if (!Number.isFinite(endedAt) || endedAt > now) return { kind: "unavailable" };
+  const earliest = endedAt + 12 * 60 * 60 * 1000;
+  const latest = endedAt + 36 * 60 * 60 * 1000;
+  if (now < earliest) return { kind: "cooldown", target: earliest };
+  if (now < latest) return { kind: "window", target: latest };
+  return { kind: "overdue" };
+}
+
+async function historicalSecurityArea(record) {
+  if (Number.isInteger(record.staging_solar_system_id)) {
+    return securityForSystem(record.staging_solar_system_id)?.area ?? null;
+  }
+  // Older tracker records have no staging ID. Resolve their constellation and
+  // use the reference staging map, or an entirely homogeneous security area.
+  const constellation = await getUniverseRecord("constellations", record.constellation_id);
+  if (!Array.isArray(constellation.systems) || !constellation.systems.length) return null;
+  const staging = constellation.systems.filter((id) => SYSTEM_TYPES[id] === "Staging");
+  const ids = staging.length ? staging : constellation.systems;
+  const areas = ids.map((id) => securityForSystem(id)?.area ?? null);
+  return areas.every((area) => area !== null && area === areas[0]) ? areas[0] : null;
+}
+
+async function getHighSecSpawnEstimate(incursions, history) {
+  const currentAreas = incursions.map((item) => securityForSystem(item.staging_solar_system_id)?.area);
+  if (currentAreas.includes("high")) return null;
+  const unavailable = { kind: "unavailable" };
+  if (currentAreas.some((area) => !area) || !history || typeof history !== "object") return unavailable;
+  const liveIds = new Set(incursions.map((item) => item.constellation_id));
+  const records = Object.values(history).filter((record) => record && Number.isInteger(record.constellation_id));
+  // A missing live spawn may not have been marked ended by the scheduled
+  // tracker yet. Do not show the previous spawn's timer while catching up.
+  for (const record of records.filter((record) => record.active === true && !liveIds.has(record.constellation_id))) {
+    const area = await historicalSecurityArea(record);
+    if (!area || area === "high") return unavailable;
+  }
+  const ended = records.filter((record) => record.active === false)
+    .sort((a, b) => (Date.parse(b.ended_at) || Infinity) - (Date.parse(a.ended_at) || Infinity));
+  // Stop at unknown security rather than skipping a potentially newer HS end.
+  for (const record of ended) {
+    const area = await historicalSecurityArea(record);
+    if (!area) return unavailable;
+    if (area === "high") {
+      const endedAt = Date.parse(record.ended_at);
+      if (highSecSpawnPhase(endedAt).kind === "unavailable") return unavailable;
+      return { endedAt, checkedAt: Date.now() };
+    }
+  }
+  return unavailable;
+}
+
+function updateHighSecSpawnBanner() {
+  spawnPanel.hidden = spawnEstimate === null;
+  if (!spawnEstimate) return;
+  const stale = Number.isFinite(spawnEstimate.checkedAt) && Date.now() - spawnEstimate.checkedAt > 10 * 60 * 1000;
+  const phase = stale ? { kind: "unavailable" }
+    : spawnEstimate.kind === "unavailable" ? spawnEstimate : highSecSpawnPhase(spawnEstimate.endedAt);
+  spawnPanel.dataset.phase = phase.kind;
+  spawnTitle.textContent = {
+    cooldown: "No high-sec spawn expected in the next",
+    window: "High-sec spawn window open · expected within",
+    overdue: "High-sec spawn window elapsed",
+    unavailable: "High-sec spawn timing unavailable",
+  }[phase.kind];
+  spawnCountdown.textContent = "";
+  spawnCountdown.hidden = !Number.isFinite(phase.target);
+  if (Number.isFinite(phase.target)) {
+    const seconds = Math.max(0, Math.ceil((phase.target - Date.now()) / 1000));
+    spawnCountdown.textContent = [Math.floor(seconds / 3600), Math.floor(seconds % 3600 / 60), seconds % 60]
+      .map((value) => String(value).padStart(2, "0")).join(":");
+  }
+  spawnDetail.textContent = phase.kind === "unavailable"
+    ? stale ? "Refresh to check for a new high-sec spawn." : "Waiting for a confirmed high-sec end time in the shared history."
+    : "Estimate: 12–36 hours after the last high-sec incursion ended. Tracker polling can delay the recorded end time."
+      + (phase.kind === "overdue" ? " Refresh to check for a new spawn." : "");
+}
 
 function readSecurityFilter() {
   try {
@@ -199,6 +282,7 @@ async function getTimingData(incursions) {
   const url = new URL(TIMINGS_URL);
   url.searchParams.set("v", String(Date.now()));
   const payload = await fetchJson(url, { cache: "no-store" });
+  timings.history = payload?.incursions;
 
   const records = Array.isArray(payload?.timings)
     ? payload.timings
@@ -431,6 +515,9 @@ function friendlyError(error) {
 
 async function loadIncursions() {
   clearInterval(remainingTimer);
+  clearInterval(spawnTimer);
+  spawnEstimate = null;
+  updateHighSecSpawnBanner();
   refreshButton.disabled = true;
   hasLoaded = false;
   list.replaceChildren();
@@ -441,13 +528,6 @@ async function loadIncursions() {
     const raw = await fetchJson(INCURSIONS_URL);
     if (!Array.isArray(raw)) throw new Error("ESI returned an unexpected response shape");
     const incursions = raw.filter(validIncursion);
-
-    if (!incursions.length) {
-      hasLoaded = true;
-      applySecurityFilter();
-      setStatus("", "No active incursions", "ESI currently reports no active incursions on Tranquility.");
-      return;
-    }
 
     let names = new Map();
     let namesWarning = "";
@@ -478,8 +558,17 @@ async function loadIncursions() {
     applySecurityFilter();
     updateRemainingTimes();
     remainingTimer = setInterval(updateRemainingTimes, 30_000);
+    // Keep the main incursion list usable even if the optional history lookup fails.
+    try {
+      spawnEstimate = await getHighSecSpawnEstimate(incursions, timings.history);
+    } catch (error) {
+      console.warn("High-sec spawn history lookup failed.", error);
+      spawnEstimate = { kind: "unavailable" };
+    }
+    updateHighSecSpawnBanner();
+    if (spawnEstimate) spawnTimer = setInterval(updateHighSecSpawnBanner, 1000);
     const fetchedAt = new Intl.DateTimeFormat(undefined, { timeStyle: "short" }).format(new Date());
-    setStatus("", `${incursions.length} active incursion${incursions.length === 1 ? "" : "s"}`, `Live ESI checked at ${fetchedAt}.${namesWarning}`);
+    setStatus("", incursions.length ? `${incursions.length} active incursion${incursions.length === 1 ? "" : "s"}` : "No active incursions", `Live ESI checked at ${fetchedAt}.${namesWarning}`);
   } catch (error) {
     console.error("Unable to load incursions", error);
     setStatus("error", "Unable to load incursions", friendlyError(error));

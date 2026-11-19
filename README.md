@@ -47,6 +47,14 @@ The UI handles timeouts, HTTP/network/CORS failures, empty results, malformed re
 
 ## Max. remaining
 
+### High-sec spawn estimate
+
+When ESI reports no active high-sec incursion, the banner uses the latest recorded high-sec end time: a 12-hour cooldown, then a spawn window through hour 36. After 36 hours it asks you to refresh. The rule mirrors [the reference project's spawn banner](https://github.com/Shadowlauch/eve-incursions-node/blob/master/packages/frontend/src/components/spawn/lastHsSpawn.tsx); it is an estimate, not an ESI forecast. Polling delays can make the recorded end time later than the actual end.
+
+The estimate is independent of the security filter and disappears whenever a high-sec incursion is active. Missing history, unknown security, or a tracker that has not yet recorded the latest end produces an unavailable message rather than a guessed timer. After ten minutes without an ESI refresh, the banner asks you to refresh. Existing history is resolved through ESI constellation data and the static staging/security maps; new tracker entries also save their staging-system ID. No additional service or database is required.
+
+## Incursion lifetime calculation
+
 The reference project calculates maximum remaining lifetime from its recorded `lastStateChangeDate`: three days for Mobilizing, eight days for Established, and one day for other states. ESI does not expose that timestamp, so the scheduled workflow runs `scripts/update_incursion_state.py` and stores each observed transition in `data/incursion-state.json`.
 
 The file was initially seeded from the reference site for continuity, but the running page no longer contacts or depends on that site. If the tracker misses a transition, its next run records the time it first observes the new state.

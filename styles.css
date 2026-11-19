@@ -56,6 +56,14 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--cyan); outline-
 .status-dot.error { color: var(--red); background: currentColor; }
 @keyframes pulse { to { opacity: .25; } }
 
+.spawn-panel { margin-top: 18px; padding: 18px 20px; border: 1px solid var(--line); border-left: 3px solid var(--cyan); border-radius: 12px; background: var(--panel); }
+.spawn-heading { display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: 12px; font-size: 1rem; }
+.spawn-countdown { color: var(--cyan); font-size: 1.6rem; font-variant-numeric: tabular-nums; letter-spacing: .04em; }
+.spawn-panel p { margin: 8px 0 0; color: var(--muted); font-size: .875rem; line-height: 1.6; }
+.spawn-panel[data-phase="window"] { border-left-color: var(--amber); }
+.spawn-panel[data-phase="window"] .spawn-countdown { color: var(--amber); }
+.spawn-panel[data-phase="overdue"] { border-left-color: var(--red); }
+.spawn-panel[data-phase="unavailable"] { border-left-color: var(--muted); }
 .filter-toolbar { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin: 20px 0; }
 .security-filters { display: flex; flex-wrap: wrap; gap: 6px; }
 .security-filters button { display: inline-flex; align-items: center; gap: 8px; border-color: var(--line); border-radius: 8px; padding: 9px 12px; min-height: 44px; background: transparent; color: var(--muted); font-size: .875rem; }
