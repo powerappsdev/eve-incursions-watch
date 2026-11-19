@@ -365,6 +365,7 @@
       "active": true,
       "constellation_id": 20000553,
       "first_seen_at": "2026-11-19T00:31:25Z",
+      "staging_solar_system_id": 30003789,
       "state": "established",
       "state_changed_at": "2026-11-19T00:31:25Z"
     },
@@ -548,6 +549,7 @@
       "active": true,
       "constellation_id": 20000750,
       "first_seen_at": "2026-11-15T10:03:31Z",
+      "staging_solar_system_id": 30005128,
       "state": "mobilizing",
       "state_changed_at": "2026-11-18T01:49:13Z"
     },
@@ -608,6 +610,6 @@
       "state_changed_at": "2026-10-30T05:43:13Z"
     }
   },
-  "updated_at": "2026-11-19T07:51:47Z",
+  "updated_at": "2026-11-19T12:53:42Z",
   "version": 1
 }
