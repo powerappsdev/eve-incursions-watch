@@ -562,8 +562,9 @@
       "state_changed_at": "2026-09-05T09:55:01Z"
     },
     "20000750": {
-      "active": true,
+      "active": false,
       "constellation_id": 20000750,
+      "ended_at": "2026-11-21T02:09:03Z",
       "first_seen_at": "2026-11-15T10:03:31Z",
       "staging_solar_system_id": 30005128,
       "state": "withdrawing",
@@ -626,6 +627,6 @@
       "state_changed_at": "2026-11-20T04:13:29Z"
     }
   },
-  "updated_at": "2026-11-20T04:13:29Z",
+  "updated_at": "2026-11-21T02:09:03Z",
   "version": 1
 }
