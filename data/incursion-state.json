@@ -24,6 +24,14 @@
       "state": "withdrawing",
       "state_changed_at": "2026-11-10T12:58:53Z"
     },
+    "20000064": {
+      "active": true,
+      "constellation_id": 20000064,
+      "first_seen_at": "2026-11-24T20:56:28Z",
+      "staging_solar_system_id": 30000444,
+      "state": "established",
+      "state_changed_at": "2026-11-24T20:56:28Z"
+    },
     "20000065": {
       "active": false,
       "constellation_id": 20000065,
@@ -379,8 +387,9 @@
       "state_changed_at": "2026-10-29T01:58:35Z"
     },
     "20000553": {
-      "active": true,
+      "active": false,
       "constellation_id": 20000553,
+      "ended_at": "2026-11-24T20:56:28Z",
       "first_seen_at": "2026-11-19T00:31:25Z",
       "staging_solar_system_id": 30003789,
       "state": "withdrawing",
@@ -629,14 +638,15 @@
       "state_changed_at": "2026-09-17T18:55:42Z"
     },
     "20000788": {
-      "active": true,
+      "active": false,
       "constellation_id": 20000788,
+      "ended_at": "2026-11-24T20:56:28Z",
       "first_seen_at": "2026-11-20T04:13:29Z",
       "staging_solar_system_id": 30000021,
       "state": "withdrawing",
       "state_changed_at": "2026-11-24T01:01:07Z"
     }
   },
-  "updated_at": "2026-11-24T10:50:36Z",
+  "updated_at": "2026-11-24T20:56:28Z",
   "version": 1
 }
