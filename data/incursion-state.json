@@ -145,8 +145,9 @@
       "state_changed_at": "2026-09-15T06:41:00Z"
     },
     "20000299": {
-      "active": true,
+      "active": false,
       "constellation_id": 20000299,
+      "ended_at": "2026-11-25T04:03:01Z",
       "first_seen_at": "2026-11-19T23:29:32Z",
       "staging_solar_system_id": 30002032,
       "state": "established",
@@ -647,6 +648,6 @@
       "state_changed_at": "2026-11-24T01:01:07Z"
     }
   },
-  "updated_at": "2026-11-24T20:56:28Z",
+  "updated_at": "2026-11-25T04:03:01Z",
   "version": 1
 }
