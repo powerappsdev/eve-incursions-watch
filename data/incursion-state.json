@@ -8,6 +8,14 @@
       "state": "withdrawing",
       "state_changed_at": "2026-10-03T07:41:13Z"
     },
+    "20000013": {
+      "active": true,
+      "constellation_id": 20000013,
+      "first_seen_at": "2026-11-26T05:01:03Z",
+      "staging_solar_system_id": 30000094,
+      "state": "established",
+      "state_changed_at": "2026-11-26T05:01:03Z"
+    },
     "20000017": {
       "active": false,
       "constellation_id": 20000017,
@@ -664,6 +672,6 @@
       "state_changed_at": "2026-11-24T01:01:07Z"
     }
   },
-  "updated_at": "2026-11-25T23:07:40Z",
+  "updated_at": "2026-11-26T05:01:03Z",
   "version": 1
 }
