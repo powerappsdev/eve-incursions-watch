@@ -37,8 +37,8 @@
       "constellation_id": 20000064,
       "first_seen_at": "2026-11-24T20:56:28Z",
       "staging_solar_system_id": 30000444,
-      "state": "established",
-      "state_changed_at": "2026-11-24T20:56:28Z"
+      "state": "mobilizing",
+      "state_changed_at": "2026-11-28T04:59:06Z"
     },
     "20000065": {
       "active": false,
@@ -672,6 +672,6 @@
       "state_changed_at": "2026-11-24T01:01:07Z"
     }
   },
-  "updated_at": "2026-11-26T05:01:03Z",
+  "updated_at": "2026-11-28T04:59:06Z",
   "version": 1
 }
